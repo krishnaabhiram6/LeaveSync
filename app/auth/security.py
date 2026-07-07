@@ -1,23 +1,13 @@
 from datetime import datetime, timedelta, timezone
-
-from jose import jwt
-
-from passlib.context import CryptContext
-
-from jose import JWTError
-from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
-from jose.exceptions import ExpiredSignatureError
+import os
 
 from dotenv import load_dotenv
+from jose import jwt
+from passlib.context import CryptContext
+from fastapi import Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer
 
-from sqlalchemy.orm import Session
-
-from app.db.session import get_db
-
-from app.models.user import User
-
-import os
+from app.auth.keycloak import verify_token
 
 load_dotenv()
 
@@ -33,6 +23,7 @@ pwd_context = CryptContext(
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/auth/login"
 )
+
 
 def create_access_token(data: dict):
     to_encode = data.copy()
@@ -51,62 +42,55 @@ def create_access_token(data: dict):
 
     return encoded_jwt
 
-from app.auth.keycloak import verify_token
-from jose import JWTError
+
 def get_current_user(
     token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
 ):
     try:
         payload = verify_token(token)
-        print("PAYLOAD:", payload)
-        email = payload.get("email")
-        if email is None:
-            raise HTTPException(
-                status_code=401,
-                detail="Email not found in token"
-            )
-        user = db.query(User).filter(
-            User.email == email
-        ).first()
-        if user is None:
-            raise HTTPException(
-                status_code=401,
-                detail="User not found"
-            )
-        return user
+        return payload
+
     except Exception as e:
-        print("VERIFY ERROR:", repr(e))
         raise HTTPException(
             status_code=401,
-            detail=str(e)
+            detail=f"Invalid or expired token: {str(e)}"
         )
-    
-    
+
+
 def require_admin(
-    current_user: User = Depends(get_current_user)
+    current_user=Depends(get_current_user)
 ):
-    if current_user.role != "Admin":
+    roles = current_user.get("realm_access", {}).get("roles", [])
+
+    if "Admin" not in roles:
         raise HTTPException(
             status_code=403,
             detail="Admin access required"
         )
-    return current_user    
+
+    return current_user
+
 
 def require_employee(
-    current_user: User = Depends(get_current_user)
+    current_user=Depends(get_current_user)
 ):
-    if current_user.role != "Employee":
+    roles = current_user.get("realm_access", {}).get("roles", [])
+
+    if "Employee" not in roles:
         raise HTTPException(
             status_code=403,
             detail="Employee access required"
         )
+
     return current_user
 
+
 def require_manager(
-    current_user: User = Depends(get_current_user)
+    current_user=Depends(get_current_user)
 ):
-    if current_user.role not in ["Manager", "Admin"]:
+    roles = current_user.get("realm_access", {}).get("roles", [])
+
+    if "Manager" not in roles and "Admin" not in roles:
         raise HTTPException(
             status_code=403,
             detail="Manager or Admin access required"
