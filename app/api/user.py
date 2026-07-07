@@ -11,9 +11,10 @@ from app.crud.user import (
     delete_user
 )
 
-from app.auth.security import get_current_user,require_admin
-from app.models.user import User
-
+from app.auth.security import (
+    get_current_user,
+    require_admin
+)
 
 router = APIRouter(
     prefix="/users",
@@ -25,7 +26,7 @@ router = APIRouter(
 def create_new_user(
     user: UserCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user=Depends(require_admin)
 ):
     return create_user(db, user)
 
@@ -33,25 +34,25 @@ def create_new_user(
 @router.get("/", response_model=list[UserResponse])
 def get_users(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user=Depends(get_current_user)
 ):
     return get_all_users(db)
 
-@router.get("/me", response_model=UserResponse)
+
+@router.get("/me")
 def get_my_profile(
-    current_user: User = Depends(get_current_user)
+    current_user=Depends(get_current_user)
 ):
     return current_user
+
 
 @router.get("/{user_id}", response_model=UserResponse)
 def get_user(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user=Depends(get_current_user)
 ):
     return get_user_by_id(db, user_id)
-
-
 
 
 @router.put("/{user_id}", response_model=UserResponse)
@@ -59,16 +60,15 @@ def update_existing_user(
     user_id: int,
     user: UserCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user=Depends(get_current_user)
 ):
     return update_user(db, user_id, user)
+
 
 @router.delete("/{user_id}", response_model=UserResponse)
 def delete_existing_user(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin)
+    current_user=Depends(require_admin)
 ):
     return delete_user(db, user_id)
-
-
