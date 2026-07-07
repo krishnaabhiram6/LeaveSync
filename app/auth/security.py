@@ -42,13 +42,44 @@ def create_access_token(data: dict):
 
     return encoded_jwt
 
+from sqlalchemy.orm import Session
+from app.db.session import get_db
+from app.models.user import User
+
 
 def get_current_user(
     token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
 ):
     try:
         payload = verify_token(token)
-        return payload
+
+        email = payload.get("email")
+
+        if email is None:
+            raise HTTPException(
+                status_code=401,
+                detail="Email not found in token"
+            )
+
+        user = (
+            db.query(User)
+            .filter(User.email == email)
+            .first()
+        )
+
+        if user is None:
+            raise HTTPException(
+                status_code=401,
+                detail="User not found"
+            )
+
+        user.keycloak_roles = (
+            payload.get("realm_access", {})
+            .get("roles", [])
+        )
+
+        return user
 
     except Exception as e:
         raise HTTPException(
@@ -56,13 +87,10 @@ def get_current_user(
             detail=f"Invalid or expired token: {str(e)}"
         )
 
-
 def require_admin(
-    current_user=Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
-    roles = current_user.get("realm_access", {}).get("roles", [])
-
-    if "Admin" not in roles:
+    if "Admin" not in current_user.keycloak_roles:
         raise HTTPException(
             status_code=403,
             detail="Admin access required"
@@ -72,11 +100,9 @@ def require_admin(
 
 
 def require_employee(
-    current_user=Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
-    roles = current_user.get("realm_access", {}).get("roles", [])
-
-    if "Employee" not in roles:
+    if "Employee" not in current_user.keycloak_roles:
         raise HTTPException(
             status_code=403,
             detail="Employee access required"
@@ -86,11 +112,13 @@ def require_employee(
 
 
 def require_manager(
-    current_user=Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
-    roles = current_user.get("realm_access", {}).get("roles", [])
-
-    if "Manager" not in roles and "Admin" not in roles:
+    if (
+        "Manager" not in current_user.keycloak_roles
+        and
+        "Admin" not in current_user.keycloak_roles
+    ):
         raise HTTPException(
             status_code=403,
             detail="Manager or Admin access required"

@@ -34,7 +34,7 @@ def create_new_user(
 @router.get("/", response_model=list[UserResponse])
 def get_users(
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_admin)
 ):
     return get_all_users(db)
 
@@ -50,7 +50,7 @@ def get_my_profile(
 def get_user(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_admin)
 ):
     return get_user_by_id(db, user_id)
 
@@ -60,7 +60,7 @@ def update_existing_user(
     user_id: int,
     user: UserCreate,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_admin)
 ):
     return update_user(db, user_id, user)
 
