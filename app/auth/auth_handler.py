@@ -4,7 +4,7 @@ import requests
 KEYCLOAK_URL="http://localhost:8080"
 REALM="LeaveSync"
 CLIENT_ID="leavesync-api"
-CLIENT_SECRET="8wqcWbviUVKkT8Wg7hfD93QD5IHw2fCR"
+CLIENT_SECRET="kXuTdXbAbr5cPsQADL2dJBenNxIS0SmY"
 
 def login_user(db: Session,email: str,password: str):
     response=requests.post(

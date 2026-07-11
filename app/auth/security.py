@@ -90,6 +90,9 @@ def get_current_user(
 def require_admin(
     current_user: User = Depends(get_current_user)
 ):
+    # print(current_user.keycloak_roles)
+    # print(current_user.role)
+
     if "Admin" not in current_user.keycloak_roles:
         raise HTTPException(
             status_code=403,
@@ -102,10 +105,14 @@ def require_admin(
 def require_employee(
     current_user: User = Depends(get_current_user)
 ):
-    if "Employee" not in current_user.keycloak_roles:
+    if (
+        "Employee" not in current_user.keycloak_roles
+        and
+        "Manager" not in current_user.keycloak_roles
+    ):
         raise HTTPException(
             status_code=403,
-            detail="Employee access required"
+            detail="Employee or Manager access required"
         )
 
     return current_user

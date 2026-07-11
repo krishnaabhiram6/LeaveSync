@@ -11,6 +11,7 @@ class UserCreate(UserBase):
 
 class UserResponse(UserBase):
     id: int
+    keycloak_id: str
     is_active: bool
 
     model_config = {
