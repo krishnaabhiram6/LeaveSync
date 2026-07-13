@@ -1,8 +1,13 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.db.session import get_db
-from app.schemas.user import UserCreate, UserResponse
+from app.dependencies.tenant import get_tenant_db
+
+from app.schemas.user import (
+    UserCreate,
+    UserResponse
+)
+
 from app.crud.user import (
     create_user,
     get_all_users,
@@ -13,7 +18,7 @@ from app.crud.user import (
 
 from app.auth.security import (
     get_current_user,
-    require_admin
+    require_admin,
 )
 
 router = APIRouter(
@@ -25,7 +30,7 @@ router = APIRouter(
 @router.post("/", response_model=UserResponse)
 def create_new_user(
     user: UserCreate,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_tenant_db),
     current_user=Depends(require_admin)
 ):
     return create_user(db, user)
@@ -33,7 +38,7 @@ def create_new_user(
 
 @router.get("/", response_model=list[UserResponse])
 def get_users(
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_tenant_db),
     current_user=Depends(require_admin)
 ):
     return get_all_users(db)
@@ -49,7 +54,7 @@ def get_my_profile(
 @router.get("/{user_id}", response_model=UserResponse)
 def get_user(
     user_id: int,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_tenant_db),
     current_user=Depends(require_admin)
 ):
     return get_user_by_id(db, user_id)
@@ -59,7 +64,7 @@ def get_user(
 def update_existing_user(
     user_id: int,
     user: UserCreate,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_tenant_db),
     current_user=Depends(require_admin)
 ):
     return update_user(db, user_id, user)
@@ -68,7 +73,7 @@ def update_existing_user(
 @router.delete("/{user_id}", response_model=UserResponse)
 def delete_existing_user(
     user_id: int,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_tenant_db),
     current_user=Depends(require_admin)
 ):
     return delete_user(db, user_id)

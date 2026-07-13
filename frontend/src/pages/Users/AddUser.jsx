@@ -3,7 +3,6 @@ import { createUser } from "../../services/userService";
 
 function AddUser({ fetchUsers }) {
   const [form, setForm] = useState({
-    keycloak_id: "",
     name: "",
     email: "",
     password: "",
@@ -26,7 +25,6 @@ function AddUser({ fetchUsers }) {
       fetchUsers();
 
       setForm({
-        keycloak_id: "",
         name: "",
         email: "",
         password: "",
@@ -35,20 +33,18 @@ function AddUser({ fetchUsers }) {
 
     } catch (err) {
       console.log(err);
-      alert("Failed to add user");
+
+      if (err.response?.status === 409) {
+        alert("User already exists in Keycloak");
+      } else {
+        alert("Failed to add user");
+      }
     }
   };
 
   return (
     <div style={{ marginBottom: "30px" }}>
       <h2>Add User</h2>
-
-      <input
-        name="keycloak_id"
-        placeholder="Keycloak ID"
-        value={form.keycloak_id}
-        onChange={handleChange}
-      />
 
       <input
         name="name"
@@ -65,6 +61,7 @@ function AddUser({ fetchUsers }) {
       />
 
       <input
+        type="password"
         name="password"
         placeholder="Password"
         value={form.password}

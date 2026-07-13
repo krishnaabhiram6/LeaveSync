@@ -1,10 +1,9 @@
 from sqlalchemy import Column, Integer, String, Date, ForeignKey
 from sqlalchemy.orm import relationship
 
-from app.db.base import Base
+from app.db.tenant_base import TenantBase
 
-
-class Leave(Base):
+class Leave(TenantBase):
     __tablename__ = "leaves"
 
     id = Column(Integer, primary_key=True)

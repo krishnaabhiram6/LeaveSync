@@ -4,7 +4,6 @@ import {
   deleteEmployee,
 } from "../../services/employeeService";
 
-import AddEmployee from "./AddEmployee";
 import EditEmployee from "./EditEmployee";
 
 function Employees() {
@@ -42,17 +41,16 @@ function Employees() {
         onClose={() => setSelectedEmployee(null)}
       />
 
-      <AddEmployee fetchEmployees={fetchEmployees} />
-
       <table border="1" cellPadding="10">
         <thead>
           <tr>
             <th>ID</th>
-            <th>User ID</th>
-            <th>Employee Code</th>
-            <th>Department</th>
-            <th>Designation</th>
-            <th>Actions</th>
+<th>Employee Code</th>
+<th>Employee Name</th>
+<th>Email</th>
+<th>Department</th>
+<th>Designation</th>
+<th>Actions</th>
           </tr>
         </thead>
 
@@ -60,10 +58,11 @@ function Employees() {
           {employees.map((emp) => (
             <tr key={emp.id}>
               <td>{emp.id}</td>
-              <td>{emp.user_id}</td>
-              <td>{emp.employee_code}</td>
-              <td>{emp.department}</td>
-              <td>{emp.designation}</td>
+<td>{emp.employee_code}</td>
+<td>{emp.user.name}</td>
+<td>{emp.user.email}</td>
+<td>{emp.department}</td>
+<td>{emp.designation}</td>
 
               <td>
                 <button

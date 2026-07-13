@@ -1,10 +1,9 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 
-from app.db.base import Base
+from app.db.tenant_base import TenantBase
 
-
-class Notification(Base):
+class Notification(TenantBase):
     __tablename__ = "notifications"
 
     id = Column(Integer, primary_key=True)

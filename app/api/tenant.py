@@ -19,13 +19,17 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=TenantResponse)
+@router.post("/")
 def create_new_tenant(
     tenant: TenantCreate,
     db: Session = Depends(get_db),
     current_user=Depends(require_admin)
 ):
-    return create_tenant(db, tenant)
+    create_tenant(db, tenant)
+
+    return {
+        "message": "Tenant created successfully"
+    }
 
 
 @router.get("/", response_model=list[TenantResponse])

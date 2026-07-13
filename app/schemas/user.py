@@ -1,13 +1,15 @@
 from pydantic import BaseModel, EmailStr
 
+
 class UserBase(BaseModel):
     name: str
     email: EmailStr
     role: str
 
+
 class UserCreate(UserBase):
-    keycloak_id: str
     password: str
+
 
 class UserResponse(UserBase):
     id: int
@@ -17,3 +19,12 @@ class UserResponse(UserBase):
     model_config = {
         "from_attributes": True
     }
+
+class AvailableEmployeeResponse(BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+
+    model_config = {
+        "from_attributes": True
+    }    

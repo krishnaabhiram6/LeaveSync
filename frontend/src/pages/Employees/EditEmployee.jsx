@@ -6,7 +6,6 @@ function EditEmployee({
   fetchEmployees,
   onClose,
 }) {
-
   const [form, setForm] = useState({
     user_id: "",
     employee_code: "",
@@ -34,12 +33,11 @@ function EditEmployee({
 
   const handleUpdate = async () => {
     try {
-
       await updateEmployee(
         selectedEmployee.id,
         {
           ...form,
-          user_id: Number(form.user_id),
+          user_id: selectedEmployee.user_id,
         }
       );
 
@@ -68,10 +66,8 @@ function EditEmployee({
       <h2>Edit Employee</h2>
 
       <input
-        name="user_id"
-        placeholder="User ID"
-        value={form.user_id}
-        onChange={handleChange}
+        value={`${selectedEmployee.user.name} (${selectedEmployee.user.email})`}
+        readOnly
       />
 
       <input
@@ -107,7 +103,6 @@ function EditEmployee({
       >
         Cancel
       </button>
-
     </div>
   );
 }

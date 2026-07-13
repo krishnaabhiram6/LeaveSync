@@ -1,9 +1,8 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from app.db.base import Base
-
-class Employee(Base):
+from app.db.tenant_base import TenantBase
+class Employee(TenantBase):
     __tablename__ = "employees"
 
     id = Column(Integer, primary_key=True)

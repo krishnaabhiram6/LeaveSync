@@ -4,16 +4,24 @@ import os
 from dotenv import load_dotenv
 from jose import jwt
 from passlib.context import CryptContext
+
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
+from sqlalchemy.orm import Session
+from sqlalchemy import text
+
 from app.auth.keycloak import verify_token
+from app.db.session import get_db
+from app.models.user import User
 
 load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(
+    os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+)
 
 pwd_context = CryptContext(
     schemes=["bcrypt"],
@@ -42,10 +50,6 @@ def create_access_token(data: dict):
 
     return encoded_jwt
 
-from sqlalchemy.orm import Session
-from app.db.session import get_db
-from app.models.user import User
-
 
 def get_current_user(
     token: str = Depends(oauth2_scheme),
@@ -56,17 +60,34 @@ def get_current_user(
 
         email = payload.get("email")
 
-        if email is None:
-            raise HTTPException(
-                status_code=401,
-                detail="Email not found in token"
-            )
+        print("=" * 70)
+        print("TOKEN EMAIL :", email)
+
+        current_schema = db.execute(
+            text("SELECT current_schema()")
+        ).scalar()
+
+        print("CURRENT SCHEMA :", current_schema)
+
+        try:
+            users = db.execute(
+                text("SELECT id, email FROM users")
+            ).fetchall()
+
+            print("USERS :", users)
+
+        except Exception as e:
+            print("SELECT USERS ERROR :", e)
+
+        print("=" * 70)
 
         user = (
             db.query(User)
             .filter(User.email == email)
             .first()
         )
+
+        print("FOUND USER :", user)
 
         if user is None:
             raise HTTPException(
@@ -82,16 +103,18 @@ def get_current_user(
         return user
 
     except Exception as e:
+        print("TOKEN ERROR :", e)
+
         raise HTTPException(
             status_code=401,
             detail=f"Invalid or expired token: {str(e)}"
         )
 
+
 def require_admin(
     current_user: User = Depends(get_current_user)
 ):
-    # print(current_user.keycloak_roles)
-    # print(current_user.role)
+    print("ROLES :", current_user.keycloak_roles)
 
     if "Admin" not in current_user.keycloak_roles:
         raise HTTPException(
