@@ -4,19 +4,24 @@ const api = axios.create({
   baseURL: "http://localhost:8000",
 });
 
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("access_token");
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("access_token");
+  const tenant = localStorage.getItem("tenant");
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+  console.log("TOKEN =", token);
+  console.log("TENANT =", tenant);
 
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
+
+  if (tenant) {
+    config.headers["X-Tenant"] = tenant;
+  }
+
+  console.log("FINAL HEADERS =", config.headers);
+
+  return config;
+});
 
 export default api;

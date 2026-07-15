@@ -7,7 +7,6 @@ function EditEmployee({
   onClose,
 }) {
   const [form, setForm] = useState({
-    user_id: "",
     employee_code: "",
     department: "",
     designation: "",
@@ -16,10 +15,9 @@ function EditEmployee({
   useEffect(() => {
     if (selectedEmployee) {
       setForm({
-        user_id: selectedEmployee.user_id,
         employee_code: selectedEmployee.employee_code,
-        department: selectedEmployee.department,
-        designation: selectedEmployee.designation,
+        department: selectedEmployee.department || "",
+        designation: selectedEmployee.designation || "",
       });
     }
   }, [selectedEmployee]);
@@ -33,22 +31,25 @@ function EditEmployee({
 
   const handleUpdate = async () => {
     try {
-      await updateEmployee(
-        selectedEmployee.id,
-        {
-          ...form,
-          user_id: selectedEmployee.user_id,
-        }
-      );
+      const payload = {
+        user_id: selectedEmployee.user.id,
+        employee_code: form.employee_code,
+        department: form.department,
+        designation: form.designation,
+      };
 
-      alert("Employee Updated");
+      console.log("Payload:", payload);
+
+      await updateEmployee(selectedEmployee.id, payload);
+
+      alert("Employee Updated Successfully");
 
       fetchEmployees();
 
       onClose();
 
     } catch (error) {
-      console.log(error);
+      console.log(error.response?.data);
       alert("Update Failed");
     }
   };
@@ -65,33 +66,53 @@ function EditEmployee({
     >
       <h2>Edit Employee</h2>
 
-      <input
-        value={`${selectedEmployee.user.name} (${selectedEmployee.user.email})`}
-        readOnly
-      />
+      <div style={{ marginBottom: "10px" }}>
+        <label>Name</label>
+        <br />
+        <input
+          value={selectedEmployee.user.name}
+          readOnly
+        />
+      </div>
 
-      <input
-        name="employee_code"
-        placeholder="Employee Code"
-        value={form.employee_code}
-        onChange={handleChange}
-      />
+      <div style={{ marginBottom: "10px" }}>
+        <label>Email</label>
+        <br />
+        <input
+          value={selectedEmployee.user.email}
+          readOnly
+        />
+      </div>
 
-      <input
-        name="department"
-        placeholder="Department"
-        value={form.department}
-        onChange={handleChange}
-      />
+      <div style={{ marginBottom: "10px" }}>
+        <label>Employee Code</label>
+        <br />
+        <input
+          name="employee_code"
+          value={form.employee_code}
+          onChange={handleChange}
+        />
+      </div>
 
-      <input
-        name="designation"
-        placeholder="Designation"
-        value={form.designation}
-        onChange={handleChange}
-      />
+      <div style={{ marginBottom: "10px" }}>
+        <label>Department</label>
+        <br />
+        <input
+          name="department"
+          value={form.department}
+          onChange={handleChange}
+        />
+      </div>
 
-      <br /><br />
+      <div style={{ marginBottom: "10px" }}>
+        <label>Designation</label>
+        <br />
+        <input
+          name="designation"
+          value={form.designation}
+          onChange={handleChange}
+        />
+      </div>
 
       <button onClick={handleUpdate}>
         Update Employee
