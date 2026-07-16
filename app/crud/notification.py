@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.models.notification import Notification
-from app.schemas.notification import NotificationCreate
+from app.schemas.notification import NotificationCreate, NotificationResponse
 
 def create_notification(db: Session, notification: NotificationCreate):
     db_notification = Notification(
@@ -45,8 +45,12 @@ def delete_notification(db: Session, notification_id: int):
         Notification.id == notification_id
     ).first()
 
-    if db_notification:
-        db.delete(db_notification)
-        db.commit()
+    if db_notification is None:
+        return None
 
-    return db_notification
+    response = NotificationResponse.model_validate(db_notification)
+
+    db.delete(db_notification)
+    db.commit()
+
+    return response

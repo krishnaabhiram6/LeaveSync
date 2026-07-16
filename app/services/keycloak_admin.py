@@ -76,13 +76,20 @@ def create_keycloak_user(
         "Content-Type": "application/json"
     }
 
+    # Split full name into First Name and Last Name
+    parts = name.strip().split(" ", 1)
+
+    first_name = parts[0]
+
+    last_name = parts[1] if len(parts) > 1 else "User"
+
     payload = {
         "username": email,
         "email": email,
         "emailVerified": True,
         "enabled": True,
-        "firstName": name,
-        "lastName": "",
+        "firstName": first_name,
+        "lastName": last_name,
         "requiredActions": [],
         "credentials": [
             {

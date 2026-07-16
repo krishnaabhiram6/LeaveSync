@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 import requests
+from sqlalchemy import text
 
 KEYCLOAK_URL = "http://localhost:8080"
 REALM = "LeaveSync"
@@ -48,7 +49,9 @@ def login_tenant_user(
     print(company_slug)
     print(email)
     print("=" * 60)
+    
 
+    db.execute(text("SET search_path TO public"))
     tenant = (
         db.query(Tenant)
         .filter(
@@ -102,6 +105,12 @@ def login_tenant_user(
     token = response.json()
 
     return {
-        "access_token": token["access_token"],
-        "token_type": "bearer",
-    }
+    "access_token": token["access_token"],
+    "token_type": "bearer",
+    "user": {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "role": user.role,
+    },
+}

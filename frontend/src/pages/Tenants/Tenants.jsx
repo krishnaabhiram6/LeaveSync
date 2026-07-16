@@ -8,9 +8,9 @@ import AddTenant from "./AddTenant";
 import EditTenant from "./EditTenant";
 
 function Tenants() {
-
   const [tenants, setTenants] = useState([]);
   const [selectedTenant, setSelectedTenant] = useState(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchTenants();
@@ -28,15 +28,66 @@ function Tenants() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete Tenant?")) return;
 
-    await deleteTenant(id);
+    try {
+      await deleteTenant(id);
 
-    fetchTenants();
+      alert("Tenant Deleted Successfully");
+
+      fetchTenants();
+    } catch (error) {
+      console.log(error);
+      alert("Delete Failed");
+    }
   };
+
+  const filteredTenants = tenants.filter((tenant) => {
+    const value = search.toLowerCase();
+
+    return (
+      tenant.company_name.toLowerCase().includes(value) ||
+      tenant.schema_name.toLowerCase().includes(value)
+    );
+  });
 
   return (
     <div>
 
-      <h1>Tenants</h1>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "25px",
+        }}
+      >
+        <div>
+          <h1>Tenants</h1>
+
+          <p
+            style={{
+              color: "#64748b",
+            }}
+          >
+            Manage all registered companies
+          </p>
+        </div>
+
+        <AddTenant fetchTenants={fetchTenants} />
+      </div>
+
+      <input
+        type="text"
+        placeholder="Search Tenant..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{
+          width: "350px",
+          padding: "12px",
+          borderRadius: "8px",
+          border: "1px solid #ddd",
+          marginBottom: "20px",
+        }}
+      />
 
       <EditTenant
         selectedTenant={selectedTenant}
@@ -44,61 +95,96 @@ function Tenants() {
         onClose={() => setSelectedTenant(null)}
       />
 
-      <AddTenant fetchTenants={fetchTenants} />
-
-      <table border="1" cellPadding="10">
-
-        <thead>
-
-          <tr>
-            <th>ID</th>
-            <th>Company Name</th>
-            <th>Schema Name</th>
-            <th>Actions</th>
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          {tenants.map((tenant) => (
-
-            <tr key={tenant.id}>
-
-              <td>{tenant.id}</td>
-
-              <td>{tenant.company_name}</td>
-
-              <td>{tenant.schema_name}</td>
-
-              <td>
-
-                <button
-                  onClick={() =>
-                    setSelectedTenant(tenant)
-                  }
-                >
-                  Edit
-                </button>
-
-                <button
-                  style={{ marginLeft: "10px" }}
-                  onClick={() =>
-                    handleDelete(tenant.id)
-                  }
-                >
-                  Delete
-                </button>
-
-              </td>
-
+      <div
+        style={{
+          background: "white",
+          borderRadius: "12px",
+          overflow: "hidden",
+          boxShadow: "0 5px 15px rgba(0,0,0,.08)",
+        }}
+      >
+        <table
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+          }}
+        >
+          <thead
+            style={{
+              background: "#1e293b",
+              color: "white",
+            }}
+          >
+            <tr>
+              <th style={{ padding: "15px" }}>ID</th>
+              <th>Company</th>
+              <th>Schema</th>
+              <th>Actions</th>
             </tr>
+          </thead>
 
-          ))}
+          <tbody>
 
-        </tbody>
+            {filteredTenants.map((tenant) => (
 
-      </table>
+              <tr
+                key={tenant.id}
+                style={{
+                  borderBottom: "1px solid #eee",
+                }}
+              >
+                <td style={{ padding: "15px" }}>
+                  {tenant.id}
+                </td>
+
+                <td>{tenant.company_name}</td>
+
+                <td>{tenant.schema_name}</td>
+
+                <td>
+
+                  <button
+                    onClick={() =>
+                      setSelectedTenant(tenant)
+                    }
+                    style={{
+                      marginRight: "10px",
+                    }}
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      handleDelete(tenant.id)
+                    }
+                  >
+                    Delete
+                  </button>
+
+                </td>
+
+              </tr>
+
+            ))}
+
+            {filteredTenants.length === 0 && (
+              <tr>
+                <td
+                  colSpan="4"
+                  style={{
+                    textAlign: "center",
+                    padding: "30px",
+                  }}
+                >
+                  No Tenants Found
+                </td>
+              </tr>
+            )}
+
+          </tbody>
+        </table>
+      </div>
 
     </div>
   );

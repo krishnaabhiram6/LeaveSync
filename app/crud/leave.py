@@ -1,13 +1,15 @@
 from sqlalchemy.orm import Session
 
 from app.models.leave import Leave
-from app.schemas.leave import LeaveCreate
+from app.schemas.leave import LeaveCreate, LeaveResponse
 
 from fastapi import HTTPException
 from app.utils.email import send_email
 
 from app.models.user import User
 from app.models.employee import Employee
+from app.models.notification import Notification
+
 
 def create_leave(
     db: Session,
@@ -31,12 +33,19 @@ def create_leave(
         leave_type_id=leave.leave_type_id,
         start_date=leave.start_date,
         end_date=leave.end_date,
-        reason=leave.reason
+        reason=leave.reason,
     )
 
     db.add(db_leave)
     db.commit()
-    db.refresh(db_leave)
+
+    leave_id = db_leave.id
+
+    db_leave = (
+        db.query(Leave)
+        .filter(Leave.id == leave_id)
+        .first()
+    )
 
     return db_leave
 
@@ -66,14 +75,17 @@ def get_all_leaves(
         .all()
     )
 
+
 def get_leave_by_id(
     db: Session,
     leave_id: int,
     current_user: User
 ):
-    db_leave = db.query(Leave).filter(
-        Leave.id == leave_id
-    ).first()
+    db_leave = (
+        db.query(Leave)
+        .filter(Leave.id == leave_id)
+        .first()
+    )
 
     if db_leave is None:
         raise HTTPException(
@@ -103,15 +115,18 @@ def get_leave_by_id(
 
     return db_leave
 
+
 def update_leave(
     db: Session,
     leave_id: int,
     leave: LeaveCreate,
     current_user: User
 ):
-    db_leave = db.query(Leave).filter(
-        Leave.id == leave_id
-    ).first()
+    db_leave = (
+        db.query(Leave)
+        .filter(Leave.id == leave_id)
+        .first()
+    )
 
     if db_leave is None:
         raise HTTPException(
@@ -119,7 +134,6 @@ def update_leave(
             detail="Leave not found"
         )
 
-    # Admin and Manager can update any leave
     if current_user.role not in ["Admin", "Manager"]:
 
         employee = (
@@ -150,14 +164,17 @@ def update_leave(
 
     return db_leave
 
+
 def delete_leave(
     db: Session,
     leave_id: int,
     current_user: User
 ):
-    db_leave = db.query(Leave).filter(
-        Leave.id == leave_id
-    ).first()
+    db_leave = (
+        db.query(Leave)
+        .filter(Leave.id == leave_id)
+        .first()
+    )
 
     if db_leave is None:
         raise HTTPException(
@@ -185,24 +202,46 @@ def delete_leave(
                 detail="You can delete only your own leave"
             )
 
+    response = LeaveResponse.model_validate(db_leave)
+
     db.delete(db_leave)
     db.commit()
 
-    return db_leave
+    return response
 
 
-
-
-def approve_leave(db: Session, leave_id: int):
-    db_leave = db.query(Leave).filter(Leave.id == leave_id).first()
+def approve_leave(
+    db: Session,
+    leave_id: int
+):
+    db_leave = (
+        db.query(Leave)
+        .filter(Leave.id == leave_id)
+        .first()
+    )
 
     if db_leave is None:
-        raise HTTPException(status_code=404, detail="Leave not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Leave not found"
+        )
 
     db_leave.status = "Approved"
 
+    notification = Notification(
+        user_id=db_leave.employee.user_id,
+        message="Your leave request has been approved."
+    )
+
+    db.add(notification)
+
     db.commit()
-    db.refresh(db_leave)
+
+    db_leave = (
+        db.query(Leave)
+        .filter(Leave.id == leave_id)
+        .first()
+    )
 
     send_email(
         to_email="krishnaabhiramsayala66@gmail.com",
@@ -213,16 +252,38 @@ def approve_leave(db: Session, leave_id: int):
     return db_leave
 
 
-def reject_leave(db: Session, leave_id: int):
-    db_leave = db.query(Leave).filter(Leave.id == leave_id).first()
+def reject_leave(
+    db: Session,
+    leave_id: int
+):
+    db_leave = (
+        db.query(Leave)
+        .filter(Leave.id == leave_id)
+        .first()
+    )
 
     if db_leave is None:
-        raise HTTPException(status_code=404, detail="Leave not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Leave not found"
+        )
 
     db_leave.status = "Rejected"
 
+    notification = Notification(
+        user_id=db_leave.employee.user_id,
+        message="Your leave request has been rejected."
+    )
+
+    db.add(notification)
+
     db.commit()
-    db.refresh(db_leave)
+
+    db_leave = (
+        db.query(Leave)
+        .filter(Leave.id == leave_id)
+        .first()
+    )
 
     send_email(
         to_email="krishnaabhiramsayala66@gmail.com",

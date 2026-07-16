@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.models.employee import Employee
-from app.schemas.user import UserCreate
+from app.schemas.user import UserCreate, UserResponse
 from app.auth.security import pwd_context
 from app.services.keycloak_admin import (
     create_keycloak_user,
@@ -109,8 +109,11 @@ def delete_user(db: Session, user_id: int):
     # Delete from Keycloak
     delete_keycloak_user(db_user.keycloak_id)
 
+    # Snapshot the response BEFORE delete/commit expires the instance
+    response = UserResponse.model_validate(db_user)
+
     # Delete from PostgreSQL
     db.delete(db_user)
     db.commit()
 
-    return db_user
+    return response

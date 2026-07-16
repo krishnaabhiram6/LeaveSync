@@ -13,3 +13,4 @@ class LeaveTypeResponse(LeaveTypeBase):
     model_config = {
         "from_attributes": True
     }
+

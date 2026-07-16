@@ -1,4 +1,4 @@
-from fastapi import Depends, Header, HTTPException
+from fastapi import Depends, Header, HTTPException, Request
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -6,11 +6,24 @@ from app.db.session import get_db
 from app.models.tenant import Tenant
 
 
-def get_tenant_db(
-    x_tenant: str = Header(..., alias="X-Tenant"),
+def get_current_tenant(
+    request: Request,
+    x_tenant: str | None = Header(default=None, alias="X-Tenant"),
     db: Session = Depends(get_db),
-):
-    # Find tenant in public.tenants
+) -> Tenant | None:
+
+    print("=" * 80)
+    print("REQUEST HEADERS")
+    print(request.headers)
+    print("X-Tenant:", x_tenant)
+    print("=" * 80)
+
+    if not x_tenant:
+        return None
+
+    # Always query tenant from PUBLIC schema
+    db.execute(text("SET search_path TO public"))
+
     tenant = (
         db.query(Tenant)
         .filter(
@@ -26,7 +39,20 @@ def get_tenant_db(
             detail="Tenant not found"
         )
 
-    # Switch to tenant schema
+    return tenant
+
+
+def get_tenant_db(
+    tenant: Tenant | None = Depends(get_current_tenant),
+    db: Session = Depends(get_db),
+):
+
+    if tenant is None:
+        raise HTTPException(
+            status_code=400,
+            detail="X-Tenant header is required"
+        )
+
     db.execute(
         text(f'SET search_path TO "{tenant.schema_name}"')
     )
@@ -34,5 +60,4 @@ def get_tenant_db(
     try:
         yield db
     finally:
-        # Always switch back to public
         db.execute(text("SET search_path TO public"))

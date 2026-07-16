@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.db.session import get_db
+from app.dependencies.tenant import get_tenant_db
 from app.schemas.leave_type import LeaveTypeCreate, LeaveTypeResponse
 from app.crud.leave_type import (
     create_leave_type,
@@ -11,7 +11,10 @@ from app.crud.leave_type import (
     delete_leave_type
 )
 
-from app.auth.security import require_admin
+from app.auth.security import (
+    require_admin,
+    get_current_user,
+)
 
 router = APIRouter(
     prefix="/leave-types",
@@ -22,7 +25,7 @@ router = APIRouter(
 @router.post("/", response_model=LeaveTypeResponse)
 def create_new_leave_type(
     leave_type: LeaveTypeCreate,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_tenant_db),
     current_user=Depends(require_admin)
 ):
     return create_leave_type(db, leave_type)
@@ -30,8 +33,8 @@ def create_new_leave_type(
 
 @router.get("/", response_model=list[LeaveTypeResponse])
 def get_leave_types(
-    db: Session = Depends(get_db),
-    current_user=Depends(require_admin)
+    db: Session = Depends(get_tenant_db),
+    current_user=Depends(get_current_user)
 ):
     return get_all_leave_types(db)
 
@@ -39,7 +42,7 @@ def get_leave_types(
 @router.get("/{leave_type_id}", response_model=LeaveTypeResponse)
 def get_leave_type(
     leave_type_id: int,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_tenant_db),
     current_user=Depends(require_admin)
 ):
     return get_leave_type_by_id(db, leave_type_id)
@@ -49,7 +52,7 @@ def get_leave_type(
 def update_existing_leave_type(
     leave_type_id: int,
     leave_type: LeaveTypeCreate,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_tenant_db),
     current_user=Depends(require_admin)
 ):
     return update_leave_type(db, leave_type_id, leave_type)
@@ -58,7 +61,12 @@ def update_existing_leave_type(
 @router.delete("/{leave_type_id}", response_model=LeaveTypeResponse)
 def delete_existing_leave_type(
     leave_type_id: int,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_tenant_db),
     current_user=Depends(require_admin)
 ):
-    return delete_leave_type(db, leave_type_id)
+    deleted = delete_leave_type(db, leave_type_id)
+
+    if deleted is None:
+        raise HTTPException(status_code=404, detail="Leave type not found")
+
+    return deleted

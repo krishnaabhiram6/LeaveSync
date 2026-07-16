@@ -9,6 +9,7 @@ from app.api import leave
 from app.api import notification
 from app.api import auth
 from app.api import tenant_auth
+from app.api import dashboard
 
 
 app = FastAPI(
@@ -36,6 +37,7 @@ app.include_router(leave.router)
 app.include_router(notification.router)
 app.include_router(auth.router)
 app.include_router(tenant_auth.router)
+app.include_router(dashboard.router)
 
 
 @app.get("/")

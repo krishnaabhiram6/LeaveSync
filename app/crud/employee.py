@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session, joinedload
 from app.models.employee import Employee
-from app.schemas.employee import EmployeeCreate
+from app.schemas.employee import EmployeeCreate, EmployeeResponse
 
 
 def create_employee(db: Session, employee: EmployeeCreate):
@@ -71,7 +71,12 @@ def delete_employee(db: Session, employee_id: int):
     if db_employee is None:
         return None
 
-    response = db_employee
+    # Snapshot the data into a schema object BEFORE delete/commit.
+    # After commit(), SQLAlchemy expires the instance's attributes, and
+    # since the row no longer exists, touching db_employee afterwards
+    # (e.g. during response serialization) raises an error. Capturing
+    # the response first avoids that.
+    response = EmployeeResponse.model_validate(db_employee)
 
     db.delete(db_employee)
     db.commit()

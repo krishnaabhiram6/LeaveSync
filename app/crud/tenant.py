@@ -5,7 +5,7 @@ from app.db.database import engine
 from app.db.tenant_base import TenantBase
 
 from app.models.tenant import Tenant
-from app.schemas.tenant import TenantCreate
+from app.schemas.tenant import TenantCreate,TenantUpdate
 from app.db.session import SessionLocal
 from app.services.tenant_admin import create_default_admin
 # Import tenant models so TenantBase.metadata knows about them
@@ -91,7 +91,11 @@ def get_tenant_by_id(db: Session, tenant_id: int):
     )
 
 
-def update_tenant(db: Session, tenant_id: int, tenant: TenantCreate):
+def update_tenant(
+    db: Session,
+    tenant_id: int,
+    tenant: TenantUpdate,
+):
     db_tenant = (
         db.query(Tenant)
         .filter(Tenant.id == tenant_id)

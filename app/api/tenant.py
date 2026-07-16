@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.schemas.tenant import TenantCreate, TenantResponse
+from app.schemas.tenant import TenantCreate, TenantResponse,TenantUpdate
 from app.crud.tenant import (
     create_tenant,
     get_all_tenants,
@@ -52,7 +52,7 @@ def get_tenant(
 @router.put("/{tenant_id}", response_model=TenantResponse)
 def update_existing_tenant(
     tenant_id: int,
-    tenant: TenantCreate,
+    tenant: TenantUpdate,
     db: Session = Depends(get_db),
     current_user=Depends(require_admin)
 ):

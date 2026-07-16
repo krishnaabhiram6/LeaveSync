@@ -6,17 +6,18 @@ function EditTenant({
   fetchTenants,
   onClose,
 }) {
-
   const [form, setForm] = useState({
     company_name: "",
+    slug: "",
     schema_name: "",
   });
 
   useEffect(() => {
     if (selectedTenant) {
       setForm({
-        company_name: selectedTenant.company_name,
-        schema_name: selectedTenant.schema_name,
+        company_name: selectedTenant.company_name || "",
+        slug: selectedTenant.slug || "",
+        schema_name: selectedTenant.schema_name || "",
       });
     }
   }, [selectedTenant]);
@@ -30,7 +31,6 @@ function EditTenant({
 
   const handleUpdate = async () => {
     try {
-
       await updateTenant(
         selectedTenant.id,
         form
@@ -44,7 +44,13 @@ function EditTenant({
 
     } catch (error) {
       console.log(error);
-      alert("Update Failed");
+
+      if (error.response) {
+        console.log(error.response.data);
+        alert(JSON.stringify(error.response.data));
+      } else {
+        alert("Update Failed");
+      }
     }
   };
 
@@ -68,13 +74,21 @@ function EditTenant({
       />
 
       <input
+        name="slug"
+        placeholder="Slug"
+        value={form.slug}
+        onChange={handleChange}
+      />
+
+      <input
         name="schema_name"
         placeholder="Schema Name"
         value={form.schema_name}
         onChange={handleChange}
       />
 
-      <br /><br />
+      <br />
+      <br />
 
       <button onClick={handleUpdate}>
         Update
@@ -86,7 +100,6 @@ function EditTenant({
       >
         Cancel
       </button>
-
     </div>
   );
 }

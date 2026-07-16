@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.models.leave_type import LeaveType
-from app.schemas.leave_type import LeaveTypeCreate
+from app.schemas.leave_type import LeaveTypeCreate, LeaveTypeResponse
 
 def create_leave_type(db: Session, leave_type: LeaveTypeCreate):
     db_leave_type = LeaveType(
@@ -42,8 +42,12 @@ def delete_leave_type(db: Session, leave_type_id: int):
         LeaveType.id == leave_type_id
     ).first()
 
-    if db_leave_type:
-        db.delete(db_leave_type)
-        db.commit()
+    if db_leave_type is None:
+        return None
 
-    return db_leave_type
+    response = LeaveTypeResponse.model_validate(db_leave_type)
+
+    db.delete(db_leave_type)
+    db.commit()
+
+    return response

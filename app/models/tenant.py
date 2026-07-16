@@ -4,6 +4,7 @@ from app.db.base import Base
 
 class Tenant(Base):
     __tablename__ = "tenants"
+    __table_args__ = {"schema": "public"}
 
     id = Column(Integer, primary_key=True)
     company_name = Column(String, nullable=False)

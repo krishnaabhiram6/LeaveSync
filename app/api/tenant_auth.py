@@ -5,7 +5,7 @@ from app.db.session import get_db
 from app.auth.auth_handler import login_tenant_user
 
 from app.schemas.login import LoginRequest
-from app.schemas.token import Token
+from app.schemas.login_response import LoginResponse
 
 router = APIRouter(
     prefix="/tenant-auth",
@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.post("/login", response_model=Token)
+@router.post("/login", response_model=LoginResponse)
 def tenant_login(
     login_data: LoginRequest,
     db: Session = Depends(get_db)

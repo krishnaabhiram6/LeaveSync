@@ -13,23 +13,62 @@ function TenantLogin() {
     try {
       const response = await api.post("/tenant-auth/login", {
         company_slug: companySlug,
-        email: email,
-        password: password,
+        email,
+        password,
       });
 
+      // Save Access Token
       localStorage.setItem(
         "access_token",
         response.data.access_token
       );
 
+      // Save Tenant
       localStorage.setItem(
         "tenant",
         companySlug
       );
 
-      navigate("/dashboard");
+      // Save Logged In User
+      localStorage.setItem(
+        "user",
+        JSON.stringify(response.data.user)
+      );
+
+      // Save Role
+      localStorage.setItem(
+        "role",
+        response.data.user.role
+      );
+
+      const role = response.data.user.role;
+
+      console.log("USER =", response.data.user);
+      console.log("ROLE =", role);
+
+      switch (role) {
+        case "Admin":
+          navigate("/dashboard");
+          break;
+
+        case "Manager":
+          navigate("/dashboard");
+          break;
+
+        case "HR":
+          navigate("/dashboard");
+          break;
+
+        case "Employee":
+          navigate("/dashboard");
+          break;
+
+        default:
+          alert("Role not found");
+      }
+
     } catch (err) {
-      console.log(err);
+      console.error(err);
       alert("Invalid Company / Email / Password");
     }
   };
@@ -41,27 +80,40 @@ function TenantLogin() {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
+        background: "#f1f5f9",
       }}
     >
       <div
         style={{
-          width: "350px",
-          padding: "25px",
-          border: "1px solid #ccc",
-          borderRadius: "10px",
+          width: "380px",
+          background: "#fff",
+          padding: "30px",
+          borderRadius: "12px",
+          boxShadow: "0 0 20px rgba(0,0,0,.1)",
         }}
       >
-        <h2>Tenant Login</h2>
+        <h2
+  style={{
+    textAlign: "center",
+    color: "#1e293b",
+    marginBottom: "25px",
+    fontWeight: "700",
+  }}
+>
+  Company Login
+</h2>
 
         <input
           type="text"
           placeholder="Company Slug"
           value={companySlug}
-          onChange={(e) => setCompanySlug(e.target.value)}
+          onChange={(e) =>
+            setCompanySlug(e.target.value)
+          }
           style={{
             width: "100%",
-            padding: "10px",
-            marginTop: "15px",
+            padding: "12px",
+            marginTop: "20px",
           }}
         />
 
@@ -69,10 +121,12 @@ function TenantLogin() {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) =>
+            setEmail(e.target.value)
+          }
           style={{
             width: "100%",
-            padding: "10px",
+            padding: "12px",
             marginTop: "15px",
           }}
         />
@@ -81,10 +135,12 @@ function TenantLogin() {
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) =>
+            setPassword(e.target.value)
+          }
           style={{
             width: "100%",
-            padding: "10px",
+            padding: "12px",
             marginTop: "15px",
           }}
         />
@@ -93,8 +149,14 @@ function TenantLogin() {
           onClick={handleLogin}
           style={{
             width: "100%",
-            padding: "10px",
-            marginTop: "20px",
+            padding: "12px",
+            marginTop: "25px",
+            background: "#2563eb",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontWeight: "bold",
           }}
         >
           Login

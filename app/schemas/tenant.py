@@ -12,6 +12,11 @@ class TenantCreate(TenantBase):
     admin_email: EmailStr
     admin_password: str
 
+class TenantUpdate(BaseModel):
+    company_name: str
+    slug: str
+    schema_name: str    
+
 
 class TenantResponse(TenantBase):
     id: int

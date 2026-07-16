@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.db.session import get_db
+from app.dependencies.tenant import get_tenant_db
 from app.schemas.notification import (
     NotificationCreate,
     NotificationResponse
@@ -25,7 +25,7 @@ router = APIRouter(
 @router.post("/", response_model=NotificationResponse)
 def create_new_notification(
     notification: NotificationCreate,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_tenant_db),
     current_user=Depends(require_admin)
 ):
     return create_notification(db, notification)
@@ -33,7 +33,7 @@ def create_new_notification(
 
 @router.get("/", response_model=list[NotificationResponse])
 def get_notifications(
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_tenant_db),
     current_user=Depends(require_admin)
 ):
     return get_all_notifications(db)
@@ -42,7 +42,7 @@ def get_notifications(
 @router.get("/{notification_id}", response_model=NotificationResponse)
 def get_notification(
     notification_id: int,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_tenant_db),
     current_user=Depends(require_admin)
 ):
     return get_notification_by_id(db, notification_id)
@@ -52,7 +52,7 @@ def get_notification(
 def update_existing_notification(
     notification_id: int,
     notification: NotificationCreate,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_tenant_db),
     current_user=Depends(require_admin)
 ):
     return update_notification(
@@ -65,7 +65,12 @@ def update_existing_notification(
 @router.delete("/{notification_id}", response_model=NotificationResponse)
 def delete_existing_notification(
     notification_id: int,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_tenant_db),
     current_user=Depends(require_admin)
 ):
-    return delete_notification(db, notification_id)
+    deleted = delete_notification(db, notification_id)
+
+    if deleted is None:
+        raise HTTPException(status_code=404, detail="Notification not found")
+
+    return deleted
