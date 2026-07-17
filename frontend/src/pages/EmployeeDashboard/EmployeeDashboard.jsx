@@ -5,23 +5,18 @@ function EmployeeDashboard() {
 
   const cards = [
     {
-      title: "Apply Leave",
-      description: "Create a leave request",
-      path: "/leaves",
+      title: "My Leave Balance",
+      description: "Check your remaining leave balance",
+      path: "/my-leave-balances",
     },
     {
       title: "My Leaves",
-      description: "View previous leave requests",
-      path: "/leaves",
-    },
-    {
-      title: "Leave Balance",
-      description: "Check remaining leave balance",
-      path: "/leaves",
+      description: "View your leave requests",
+      path: "/my-leaves",
     },
     {
       title: "Notifications",
-      description: "View notifications",
+      description: "View your notifications",
       path: "/notifications",
     },
   ];
@@ -30,7 +25,9 @@ function EmployeeDashboard() {
     <div>
       <h1
         style={{
-          fontSize: "32px",
+          fontSize: "34px",
+          fontWeight: "700",
+          color: "#0f172a",
           marginBottom: "10px",
         }}
       >
@@ -40,6 +37,7 @@ function EmployeeDashboard() {
       <p
         style={{
           color: "#64748b",
+          fontSize: "15px",
           marginBottom: "35px",
         }}
       >
@@ -62,14 +60,37 @@ function EmployeeDashboard() {
               borderRadius: "14px",
               padding: "25px",
               cursor: "pointer",
+              transition: ".2s",
               boxShadow: "0 10px 20px rgba(0,0,0,.08)",
             }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-4px)";
+              e.currentTarget.style.boxShadow =
+                "0 15px 30px rgba(0,0,0,.12)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow =
+                "0 10px 20px rgba(0,0,0,.08)";
+            }}
           >
-            <h2>{card.title}</h2>
+            <h2
+              style={{
+                margin: "0 0 10px",
+                color: "#0f172a",
+                fontSize: "22px",
+                fontWeight: "600",
+              }}
+            >
+              {card.title}
+            </h2>
 
             <p
               style={{
+                margin: 0,
                 color: "#64748b",
+                fontSize: "16px",
+                lineHeight: "1.5",
               }}
             >
               {card.description}

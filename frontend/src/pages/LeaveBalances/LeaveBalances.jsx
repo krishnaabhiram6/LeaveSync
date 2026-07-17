@@ -1,54 +1,53 @@
 import { useEffect, useState } from "react";
-import { getUsers, deleteUser } from "../../services/userService";
+import {
+  getLeaveBalances,
+  deleteLeaveBalance,
+} from "../../services/leaveBalanceService";
 
-import AddUser from "./AddUser";
-import EditUser from "./EditUser";
+import AddLeaveBalance from "./AddLeaveBalance";
+import EditLeaveBalance from "./EditLeaveBalance";
 
-function Users() {
-  const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
+function LeaveBalances() {
+  const [leaveBalances, setLeaveBalances] = useState([]);
+  const [selectedLeaveBalance, setSelectedLeaveBalance] = useState(null);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetchUsers();
+    fetchLeaveBalances();
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchLeaveBalances = async () => {
     try {
-      const data = await getUsers();
-      setUsers(data);
+      const data = await getLeaveBalances();
+      setLeaveBalances(data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleEdit = (user) => {
-    setSelectedUser(user);
-  };
-
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this user?"
-    );
-
-    if (!confirmDelete) return;
+    if (!window.confirm("Delete Leave Balance?")) return;
 
     try {
-      await deleteUser(id);
-      alert("User Deleted Successfully");
-      fetchUsers();
+      await deleteLeaveBalance(id);
+
+      alert("Leave Balance Deleted Successfully");
+
+      fetchLeaveBalances();
     } catch (error) {
       console.log(error);
       alert("Delete Failed");
     }
   };
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(search.toLowerCase()) ||
-      user.email.toLowerCase().includes(search.toLowerCase()) ||
-      user.role.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredLeaveBalances = leaveBalances.filter((balance) => {
+    const value = search.toLowerCase();
+
+    return (
+      balance.employee_name.toLowerCase().includes(value) ||
+      balance.leave_type_name.toLowerCase().includes(value)
+    );
+  });
 
   return (
     <div>
@@ -71,7 +70,7 @@ function Users() {
               color: "#0f172a",
             }}
           >
-            Users
+            Leave Balances
           </h1>
 
           <p
@@ -81,17 +80,20 @@ function Users() {
               fontSize: "15px",
             }}
           >
-            Manage all company users
+            Manage employee leave balances
           </p>
         </div>
 
-        <AddUser fetchUsers={fetchUsers} />
+        <AddLeaveBalance
+          fetchLeaveBalances={fetchLeaveBalances}
+        />
       </div>
 
       {/* Search */}
 
       <input
-        placeholder="Search user..."
+        type="text"
+        placeholder="Search Employee or Leave Type..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         style={{
@@ -107,10 +109,10 @@ function Users() {
 
       {/* Edit */}
 
-      <EditUser
-        selectedUser={selectedUser}
-        fetchUsers={fetchUsers}
-        onClose={() => setSelectedUser(null)}
+      <EditLeaveBalance
+        selectedLeaveBalance={selectedLeaveBalance}
+        fetchLeaveBalances={fetchLeaveBalances}
+        onClose={() => setSelectedLeaveBalance(null)}
       />
 
       {/* Table */}
@@ -136,46 +138,27 @@ function Users() {
             }}
           >
             <tr>
-              <th
-                style={{
-                  padding: "18px",
-                  fontWeight: "600",
-                }}
-              >
-                ID
+              <th style={{ padding: "18px", fontWeight: "600" }}>ID</th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Employee
               </th>
-
-              <th
-                style={{
-                  padding: "18px",
-                  fontWeight: "600",
-                }}
-              >
-                Name
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Leave Type
               </th>
-
-              <th
-                style={{
-                  padding: "18px",
-                  fontWeight: "600",
-                }}
-              >
-                Email
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Total Days
               </th>
-
-              <th
-                style={{
-                  padding: "18px",
-                  fontWeight: "600",
-                }}
-              >
-                Role
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Used Days
               </th>
-
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Remaining Days
+              </th>
               <th
                 style={{
                   padding: "18px",
                   fontWeight: "600",
+                  width: "180px",
                 }}
               >
                 Actions
@@ -184,25 +167,33 @@ function Users() {
           </thead>
 
           <tbody>
-            {filteredUsers.map((user) => (
+            {filteredLeaveBalances.map((balance) => (
               <tr
-                key={user.id}
+                key={balance.id}
                 style={{
                   borderBottom: "1px solid #e2e8f0",
                   height: "60px",
                 }}
               >
-                <td style={{ padding: "18px" }}>{user.id}</td>
+                <td style={{ padding: "18px" }}>
+                  {balance.id}
+                </td>
 
-                <td>{user.name}</td>
+                <td>{balance.employee_name}</td>
 
-                <td>{user.email}</td>
+                <td>{balance.leave_type_name}</td>
 
-                <td>{user.role}</td>
+                <td>{balance.total_days}</td>
+
+                <td>{balance.used_days}</td>
+
+                <td>{balance.remaining_days}</td>
 
                 <td>
                   <button
-                    onClick={() => handleEdit(user)}
+                    onClick={() =>
+                      setSelectedLeaveBalance(balance)
+                    }
                     style={{
                       background: "#2563eb",
                       color: "white",
@@ -217,7 +208,9 @@ function Users() {
                   </button>
 
                   <button
-                    onClick={() => handleDelete(user.id)}
+                    onClick={() =>
+                      handleDelete(balance.id)
+                    }
                     style={{
                       background: "#dc2626",
                       color: "white",
@@ -233,17 +226,17 @@ function Users() {
               </tr>
             ))}
 
-            {filteredUsers.length === 0 && (
+            {filteredLeaveBalances.length === 0 && (
               <tr>
                 <td
-                  colSpan="5"
+                  colSpan="7"
                   style={{
                     textAlign: "center",
                     padding: "35px",
                     color: "#64748b",
                   }}
                 >
-                  No Users Found
+                  No Leave Balances Found
                 </td>
               </tr>
             )}
@@ -254,4 +247,4 @@ function Users() {
   );
 }
 
-export default Users;
+export default LeaveBalances;

@@ -72,18 +72,19 @@ function MyLeaves() {
 
   return (
     <div>
+      {/* Header */}
 
       <div
         style={{
-          marginBottom: "30px",
+          marginBottom: "35px",
         }}
       >
         <h1
           style={{
-            fontSize: "40px",
-            color: "#1e293b",
-            marginBottom: "10px",
+            margin: 0,
+            fontSize: "34px",
             fontWeight: "700",
+            color: "#0f172a",
           }}
         >
           My Leaves
@@ -91,13 +92,16 @@ function MyLeaves() {
 
         <p
           style={{
+            marginTop: "8px",
             color: "#64748b",
-            fontSize: "16px",
+            fontSize: "15px",
           }}
         >
           Apply and track your leave requests
         </p>
       </div>
+
+      {/* Apply Leave Card */}
 
       <div
         style={{
@@ -105,113 +109,119 @@ function MyLeaves() {
           padding: "30px",
           borderRadius: "12px",
           marginBottom: "30px",
-          boxShadow: "0 5px 15px rgba(0,0,0,.08)",
+          boxShadow: "0 10px 30px rgba(15,23,42,.08)",
         }}
       >
         <h2
           style={{
-            color: "#1e293b",
+            marginTop: 0,
             marginBottom: "25px",
+            color: "#0f172a",
           }}
         >
           Apply Leave
         </h2>
 
-        <select
-          name="leave_type_id"
-          value={form.leave_type_id}
-          onChange={handleChange}
+        <div
           style={{
-            width: "300px",
-            padding: "10px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+            maxWidth: "500px",
           }}
         >
-          <option value="">
-            Select Leave Type
-          </option>
+          <select
+            name="leave_type_id"
+            value={form.leave_type_id}
+            onChange={handleChange}
+            style={{
+              padding: "12px",
+              borderRadius: "10px",
+              border: "1px solid #cbd5e1",
+              fontSize: "15px",
+              outline: "none",
+            }}
+          >
+            <option value="">Select Leave Type</option>
 
-          {leaveTypes.map((type) => (
-            <option
-              key={type.id}
-              value={type.id}
-            >
-              {type.name}
-            </option>
-          ))}
-        </select>
+            {leaveTypes.map((type) => (
+              <option key={type.id} value={type.id}>
+                {type.name}
+              </option>
+            ))}
+          </select>
 
-        <br /><br />
+          <input
+            type="date"
+            name="start_date"
+            value={form.start_date}
+            onChange={handleChange}
+            style={{
+              padding: "12px",
+              borderRadius: "10px",
+              border: "1px solid #cbd5e1",
+              fontSize: "15px",
+              outline: "none",
+            }}
+          />
 
-        <input
-          type="date"
-          name="start_date"
-          value={form.start_date}
-          onChange={handleChange}
-          style={{
-            width: "300px",
-            padding: "10px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-          }}
-        />
+          <input
+            type="date"
+            name="end_date"
+            value={form.end_date}
+            onChange={handleChange}
+            style={{
+              padding: "12px",
+              borderRadius: "10px",
+              border: "1px solid #cbd5e1",
+              fontSize: "15px",
+              outline: "none",
+            }}
+          />
 
-        <br /><br />
+          <textarea
+            rows="4"
+            name="reason"
+            placeholder="Reason"
+            value={form.reason}
+            onChange={handleChange}
+            style={{
+              padding: "12px",
+              borderRadius: "10px",
+              border: "1px solid #cbd5e1",
+              fontSize: "15px",
+              outline: "none",
+              resize: "vertical",
+            }}
+          />
 
-        <input
-          type="date"
-          name="end_date"
-          value={form.end_date}
-          onChange={handleChange}
-          style={{
-            width: "300px",
-            padding: "10px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-          }}
-        />
-
-        <br /><br />
-
-        <textarea
-          rows="4"
-          name="reason"
-          placeholder="Reason"
-          value={form.reason}
-          onChange={handleChange}
-          style={{
-            width: "500px",
-            padding: "10px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-          }}
-        />
-
-        <br /><br />
-
-        <button
-          onClick={handleSubmit}
-          style={{
-            background: "#2563eb",
-            color: "white",
-            border: "none",
-            padding: "12px 25px",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontSize: "15px",
-          }}
-        >
-          Apply Leave
-        </button>
+          <button
+            onClick={handleSubmit}
+            style={{
+              width: "170px",
+              background: "#2563eb",
+              color: "white",
+              border: "none",
+              padding: "12px 20px",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "15px",
+              fontWeight: "600",
+            }}
+          >
+            Apply Leave
+          </button>
+        </div>
       </div>
+
+      {/* Leave Table */}
 
       <div
         style={{
           background: "white",
           borderRadius: "12px",
           overflow: "hidden",
-          boxShadow: "0 5px 15px rgba(0,0,0,.08)",
+          boxShadow: "0 10px 30px rgba(15,23,42,.08)",
         }}
       >
         <table
@@ -222,16 +232,26 @@ function MyLeaves() {
         >
           <thead
             style={{
-              background: "#1e293b",
+              background: "#0f172a",
               color: "white",
             }}
           >
             <tr>
-              <th style={{ padding: "15px" }}>Leave Type</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Reason</th>
-              <th>Status</th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Leave Type
+              </th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Start Date
+              </th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                End Date
+              </th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Reason
+              </th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Status
+              </th>
             </tr>
           </thead>
 
@@ -240,11 +260,12 @@ function MyLeaves() {
               <tr
                 key={leave.id}
                 style={{
-                  borderBottom: "1px solid #eee",
+                  borderBottom: "1px solid #e2e8f0",
+                  height: "60px",
                 }}
               >
-                <td style={{ padding: "15px" }}>
-                  {leave.leave_type_id}
+                <td style={{ padding: "18px" }}>
+                  {leave.leave_type_name || leave.leave_type_id}
                 </td>
 
                 <td>{leave.start_date}</td>
@@ -254,23 +275,25 @@ function MyLeaves() {
                 <td>{leave.reason}</td>
 
                 <td>
-                  {leave.status === "Approved" && (
-                    <span style={{ color: "green", fontWeight: "bold" }}>
-                      Approved
-                    </span>
-                  )}
-
-                  {leave.status === "Rejected" && (
-                    <span style={{ color: "red", fontWeight: "bold" }}>
-                      Rejected
-                    </span>
-                  )}
-
-                  {leave.status === "Pending" && (
-                    <span style={{ color: "#f59e0b", fontWeight: "bold" }}>
-                      Pending
-                    </span>
-                  )}
+                  <span
+                    style={{
+                      display: "inline-block",
+                      minWidth: "90px",
+                      textAlign: "center",
+                      padding: "6px 12px",
+                      borderRadius: "20px",
+                      color: "white",
+                      fontWeight: "600",
+                      background:
+                        leave.status === "Approved"
+                          ? "#16a34a"
+                          : leave.status === "Rejected"
+                          ? "#dc2626"
+                          : "#f59e0b",
+                    }}
+                  >
+                    {leave.status}
+                  </span>
                 </td>
               </tr>
             ))}
@@ -281,7 +304,8 @@ function MyLeaves() {
                   colSpan="5"
                   style={{
                     textAlign: "center",
-                    padding: "30px",
+                    padding: "35px",
+                    color: "#64748b",
                   }}
                 >
                   No Leave Records Found
@@ -291,7 +315,6 @@ function MyLeaves() {
           </tbody>
         </table>
       </div>
-
     </div>
   );
 }

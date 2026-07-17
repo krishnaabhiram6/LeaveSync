@@ -14,6 +14,7 @@ import app.models.employee
 import app.models.leave_type
 import app.models.leave
 import app.models.notification
+import app.models.leave_balance
 
 
 def create_tenant(db: Session, tenant: TenantCreate):

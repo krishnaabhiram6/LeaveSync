@@ -8,6 +8,7 @@ function EmployeeSidebar() {
 
   const menus = [
   { name: "Dashboard", path: "/dashboard" },
+  { name: "My Leave Balance", path: "/my-leave-balances" },
   { name: "My Leaves", path: "/my-leaves" },
   { name: "Notifications", path: "/notifications" },
 ];

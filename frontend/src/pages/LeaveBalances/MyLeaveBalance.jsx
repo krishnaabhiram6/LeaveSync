@@ -1,34 +1,20 @@
 import { useEffect, useState } from "react";
-import { getMyNotifications } from "../../services/notificationService";
+import { getMyLeaveBalances } from "../../services/leaveBalanceService";
 
-function Notifications() {
-  const [notifications, setNotifications] = useState([]);
+function MyLeaveBalance() {
+  const [leaveBalances, setLeaveBalances] = useState([]);
 
   useEffect(() => {
-    fetchNotifications();
+    fetchLeaveBalances();
   }, []);
 
-  const fetchNotifications = async () => {
+  const fetchLeaveBalances = async () => {
     try {
-      const data = await getMyNotifications();
-      setNotifications(data);
+      const data = await getMyLeaveBalances();
+      setLeaveBalances(data);
     } catch (err) {
       console.log(err);
     }
-  };
-
-  const formatDate = (date) => {
-    if (!date) return "-";
-
-    return new Date(date + "Z").toLocaleString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-      timeZone: "Asia/Kolkata",
-    });
   };
 
   return (
@@ -48,7 +34,7 @@ function Notifications() {
             color: "#0f172a",
           }}
         >
-          Notifications
+          My Leave Balance
         </h1>
 
         <p
@@ -58,7 +44,7 @@ function Notifications() {
             fontSize: "15px",
           }}
         >
-          Your notifications and leave updates
+          View your available leave balances
         </p>
       </div>
 
@@ -89,63 +75,72 @@ function Notifications() {
                 style={{
                   padding: "18px",
                   fontWeight: "600",
-                  textAlign: "left",
                 }}
               >
-                Message
+                Leave Type
               </th>
 
               <th
                 style={{
                   padding: "18px",
                   fontWeight: "600",
-                  textAlign: "left",
                 }}
               >
-                Received At
+                Total Days
+              </th>
+
+              <th
+                style={{
+                  padding: "18px",
+                  fontWeight: "600",
+                }}
+              >
+                Used Days
+              </th>
+
+              <th
+                style={{
+                  padding: "18px",
+                  fontWeight: "600",
+                }}
+              >
+                Remaining Days
               </th>
             </tr>
           </thead>
 
           <tbody>
-            {notifications.map((notification) => (
+            {leaveBalances.map((balance) => (
               <tr
-                key={notification.id}
+                key={balance.id}
                 style={{
                   borderBottom: "1px solid #e2e8f0",
                   height: "60px",
                 }}
               >
-                <td
-                  style={{
-                    padding: "18px",
-                  }}
-                >
-                  {notification.message}
+                <td style={{ padding: "18px" }}>
+                  {balance.leave_type_name}
                 </td>
 
-                <td
-                  style={{
-                    padding: "18px",
-                    color: "#475569",
-                  }}
-                >
-                  {formatDate(notification.sent_at)}
-                </td>
+                <td>{balance.total_days}</td>
+
+                <td>{balance.used_days}</td>
+
+                <td>{balance.remaining_days}</td>
               </tr>
             ))}
 
-            {notifications.length === 0 && (
+            {leaveBalances.length === 0 && (
               <tr>
                 <td
-                  colSpan="2"
+                  colSpan="4"
                   style={{
                     textAlign: "center",
                     padding: "35px",
                     color: "#64748b",
                   }}
                 >
-                  No Notifications Found
+                  No Leave Balance Found
                 </td>
               </tr>
             )}
@@ -156,4 +151,4 @@ function Notifications() {
   );
 }
 
-export default Notifications;
+export default MyLeaveBalance;

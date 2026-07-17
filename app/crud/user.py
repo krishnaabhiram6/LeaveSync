@@ -23,7 +23,7 @@ def create_user(db: Session, user: UserCreate):
         role=user.role
     )
 
-    # Save user in PostgreSQL
+    # Create PostgreSQL user
     db_user = User(
         keycloak_id=keycloak_id,
         name=user.name,
@@ -48,7 +48,13 @@ def create_user(db: Session, user: UserCreate):
         db.add(employee)
         db.commit()
 
-    return db_user
+    user_id = db_user.id
+
+    return (
+        db.query(User)
+        .filter(User.id == user_id)
+        .first()
+    )
 
 
 def get_all_users(db: Session):

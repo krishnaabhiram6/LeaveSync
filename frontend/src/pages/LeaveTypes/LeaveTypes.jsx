@@ -46,20 +46,33 @@ function LeaveTypes() {
 
   return (
     <div>
+      {/* Header */}
+
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "25px",
+          alignItems: "flex-start",
+          marginBottom: "35px",
         }}
       >
         <div>
-          <h1>Leave Types</h1>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: "34px",
+              fontWeight: "700",
+              color: "#0f172a",
+            }}
+          >
+            Leave Types
+          </h1>
 
           <p
             style={{
+              marginTop: "8px",
               color: "#64748b",
+              fontSize: "15px",
             }}
           >
             Configure leave policies
@@ -69,19 +82,25 @@ function LeaveTypes() {
         <AddLeaveType fetchLeaveTypes={fetchLeaveTypes} />
       </div>
 
+      {/* Search */}
+
       <input
         type="text"
         placeholder="Search Leave Type..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         style={{
-          width: "350px",
-          padding: "12px",
-          borderRadius: "8px",
-          border: "1px solid #ddd",
-          marginBottom: "20px",
+          width: "380px",
+          padding: "13px 16px",
+          borderRadius: "10px",
+          border: "1px solid #cbd5e1",
+          outline: "none",
+          fontSize: "15px",
+          marginBottom: "25px",
         }}
       />
+
+      {/* Edit */}
 
       <EditLeaveType
         selectedLeaveType={selectedLeaveType}
@@ -89,12 +108,14 @@ function LeaveTypes() {
         onClose={() => setSelectedLeaveType(null)}
       />
 
+      {/* Table */}
+
       <div
         style={{
           background: "white",
           borderRadius: "12px",
           overflow: "hidden",
-          boxShadow: "0 5px 15px rgba(0,0,0,.08)",
+          boxShadow: "0 10px 30px rgba(15,23,42,.08)",
         }}
       >
         <table
@@ -105,15 +126,17 @@ function LeaveTypes() {
         >
           <thead
             style={{
-              background: "#1e293b",
+              background: "#0f172a",
               color: "white",
             }}
           >
             <tr>
-              <th style={{ padding: "15px" }}>ID</th>
-              <th>Name</th>
-              <th>Max Days / Year</th>
-              <th>Actions</th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>ID</th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>Name</th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Max Days / Year
+              </th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>Actions</th>
             </tr>
           </thead>
 
@@ -122,12 +145,11 @@ function LeaveTypes() {
               <tr
                 key={leaveType.id}
                 style={{
-                  borderBottom: "1px solid #eee",
+                  borderBottom: "1px solid #e2e8f0",
+                  height: "60px",
                 }}
               >
-                <td style={{ padding: "15px" }}>
-                  {leaveType.id}
-                </td>
+                <td style={{ padding: "18px" }}>{leaveType.id}</td>
 
                 <td>{leaveType.name}</td>
 
@@ -135,20 +157,30 @@ function LeaveTypes() {
 
                 <td>
                   <button
-                    onClick={() =>
-                      setSelectedLeaveType(leaveType)
-                    }
+                    onClick={() => setSelectedLeaveType(leaveType)}
                     style={{
+                      background: "#2563eb",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "6px",
+                      padding: "8px 14px",
                       marginRight: "10px",
+                      cursor: "pointer",
                     }}
                   >
                     Edit
                   </button>
 
                   <button
-                    onClick={() =>
-                      handleDelete(leaveType.id)
-                    }
+                    onClick={() => handleDelete(leaveType.id)}
+                    style={{
+                      background: "#dc2626",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "6px",
+                      padding: "8px 14px",
+                      cursor: "pointer",
+                    }}
                   >
                     Delete
                   </button>
@@ -162,7 +194,8 @@ function LeaveTypes() {
                   colSpan="4"
                   style={{
                     textAlign: "center",
-                    padding: "30px",
+                    padding: "35px",
+                    color: "#64748b",
                   }}
                 >
                   No Leave Types Found

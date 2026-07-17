@@ -9,6 +9,11 @@ from app.utils.email import send_email
 from app.models.user import User
 from app.models.employee import Employee
 from app.models.notification import Notification
+from app.models.leave_balance import LeaveBalance
+from datetime import timedelta
+
+from app.models.leave_balance import LeaveBalance
+from sqlalchemy import text
 
 
 def create_leave(
@@ -37,17 +42,14 @@ def create_leave(
     )
 
     db.add(db_leave)
+
     db.commit()
 
-    leave_id = db_leave.id
-
-    db_leave = (
+    return (
         db.query(Leave)
-        .filter(Leave.id == leave_id)
+        .filter(Leave.id == db_leave.id)
         .first()
     )
-
-    return db_leave
 
 
 def get_all_leaves(
@@ -226,6 +228,40 @@ def approve_leave(
             detail="Leave not found"
         )
 
+    if db_leave.status == "Approved":
+        raise HTTPException(
+            status_code=400,
+            detail="Leave already approved"
+        )
+
+    leave_balance = (
+        db.query(LeaveBalance)
+        .filter(
+            LeaveBalance.employee_id == db_leave.employee_id,
+            LeaveBalance.leave_type_id == db_leave.leave_type_id,
+        )
+        .first()
+    )
+
+    if leave_balance is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Leave Balance not found"
+        )
+
+    leave_days = (
+        (db_leave.end_date - db_leave.start_date).days + 1
+    )
+
+    if leave_balance.remaining_days < leave_days:
+        raise HTTPException(
+            status_code=400,
+            detail="Insufficient leave balance"
+        )
+
+    leave_balance.used_days += leave_days
+    leave_balance.remaining_days -= leave_days
+
     db_leave.status = "Approved"
 
     notification = Notification(
@@ -235,13 +271,9 @@ def approve_leave(
 
     db.add(notification)
 
-    db.commit()
+    leave_id = db_leave.id
 
-    db_leave = (
-        db.query(Leave)
-        .filter(Leave.id == leave_id)
-        .first()
-    )
+    db.commit()
 
     send_email(
         to_email="krishnaabhiramsayala66@gmail.com",
@@ -249,7 +281,11 @@ def approve_leave(
         body="Your leave request has been approved."
     )
 
-    return db_leave
+    return (
+        db.query(Leave)
+        .filter(Leave.id == leave_id)
+        .first()
+    )
 
 
 def reject_leave(
@@ -292,3 +328,22 @@ def reject_leave(
     )
 
     return db_leave
+
+
+def get_all_leaves_display(db: Session):
+    leaves = db.query(Leave).all()
+
+    result = []
+
+    for leave in leaves:
+        result.append({
+            "id": leave.id,
+            "employee_name": leave.employee.user.name,
+            "leave_type_name": leave.leave_type.name,
+            "start_date": leave.start_date,
+            "end_date": leave.end_date,
+            "status": leave.status,
+            "reason": leave.reason
+        })
+
+    return result

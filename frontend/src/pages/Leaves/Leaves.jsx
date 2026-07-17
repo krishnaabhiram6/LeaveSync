@@ -57,17 +57,19 @@ function Leaves() {
 
   return (
     <div>
+      {/* Header */}
+
       <div
         style={{
-          marginBottom: "30px",
+          marginBottom: "35px",
         }}
       >
         <h1
           style={{
-            fontSize: "38px",
-            color: "#0f172a",
+            margin: 0,
+            fontSize: "34px",
             fontWeight: "700",
-            marginBottom: "10px",
+            color: "#0f172a",
           }}
         >
           Leaves
@@ -75,13 +77,16 @@ function Leaves() {
 
         <p
           style={{
+            marginTop: "8px",
             color: "#64748b",
-            fontSize: "16px",
+            fontSize: "15px",
           }}
         >
           Manage employee leave requests
         </p>
       </div>
+
+      {/* Search */}
 
       <input
         type="text"
@@ -89,22 +94,24 @@ function Leaves() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         style={{
-          width: "350px",
-          padding: "12px 16px",
+          width: "380px",
+          padding: "13px 16px",
           borderRadius: "10px",
           border: "1px solid #cbd5e1",
           outline: "none",
           fontSize: "15px",
-          marginBottom: "20px",
+          marginBottom: "25px",
         }}
       />
+
+      {/* Table */}
 
       <div
         style={{
           background: "white",
           borderRadius: "12px",
           overflow: "hidden",
-          boxShadow: "0 5px 15px rgba(0,0,0,.08)",
+          boxShadow: "0 10px 30px rgba(15,23,42,.08)",
         }}
       >
         <table
@@ -115,19 +122,33 @@ function Leaves() {
         >
           <thead
             style={{
-              background: "#1e293b",
+              background: "#0f172a",
               color: "white",
             }}
           >
             <tr>
-              <th style={{ padding: "15px" }}>ID</th>
-              <th>Employee</th>
-              <th>Leave Type</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Status</th>
-              <th>Reason</th>
-              <th>Actions</th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>ID</th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Employee
+              </th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Leave Type
+              </th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Start Date
+              </th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                End Date
+              </th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Status
+              </th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Reason
+              </th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>
+                Actions
+              </th>
             </tr>
           </thead>
 
@@ -136,14 +157,15 @@ function Leaves() {
               <tr
                 key={leave.id}
                 style={{
-                  borderBottom: "1px solid #eee",
+                  borderBottom: "1px solid #e2e8f0",
+                  height: "60px",
                 }}
               >
-                <td style={{ padding: "15px" }}>{leave.id}</td>
+                <td style={{ padding: "18px" }}>{leave.id}</td>
 
-                <td>{leave.employee_id}</td>
+                <td>{leave.employee_name}</td>
 
-                <td>{leave.leave_type_id}</td>
+                <td>{leave.leave_type_name}</td>
 
                 <td>{leave.start_date}</td>
 
@@ -152,10 +174,13 @@ function Leaves() {
                 <td>
                   <span
                     style={{
+                      display: "inline-block",
+                      minWidth: "90px",
+                      textAlign: "center",
                       padding: "6px 12px",
                       borderRadius: "20px",
                       color: "white",
-                      fontWeight: "bold",
+                      fontWeight: "600",
                       background:
                         leave.status === "Approved"
                           ? "#16a34a"
@@ -176,14 +201,13 @@ function Leaves() {
                       <button
                         onClick={() => handleApprove(leave.id)}
                         style={{
-                          marginRight: "8px",
                           background: "#16a34a",
                           color: "white",
                           border: "none",
-                          padding: "8px 14px",
                           borderRadius: "6px",
+                          padding: "8px 14px",
+                          marginRight: "10px",
                           cursor: "pointer",
-                          fontWeight: "bold",
                         }}
                       >
                         Approve
@@ -195,10 +219,9 @@ function Leaves() {
                           background: "#dc2626",
                           color: "white",
                           border: "none",
-                          padding: "8px 14px",
                           borderRadius: "6px",
+                          padding: "8px 14px",
                           cursor: "pointer",
-                          fontWeight: "bold",
                         }}
                       >
                         Reject
@@ -208,7 +231,7 @@ function Leaves() {
                     <span
                       style={{
                         color: "#64748b",
-                        fontWeight: "bold",
+                        fontWeight: "600",
                       }}
                     >
                       Completed
@@ -224,7 +247,8 @@ function Leaves() {
                   colSpan="8"
                   style={{
                     textAlign: "center",
-                    padding: "30px",
+                    padding: "35px",
+                    color: "#64748b",
                   }}
                 >
                   No Leave Records Found

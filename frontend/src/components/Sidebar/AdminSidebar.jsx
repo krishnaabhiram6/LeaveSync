@@ -24,12 +24,12 @@ function AdminSidebar() {
       path: "/leave-types",
     },
     {
-      name: "Leaves",
-      path: "/leaves",
+      name: "Leave Balances",
+      path: "/leave-balances",
     },
     {
-      name: "Notifications",
-      path: "/notifications",
+      name: "Leaves",
+      path: "/leaves",
     },
   ];
 
@@ -48,23 +48,30 @@ function AdminSidebar() {
 
       <div
         style={{
-          padding: "25px",
+          padding: "30px 25px",
           borderBottom: "1px solid #334155",
+          textAlign: "center",
         }}
       >
-        <h2
+        <h1
           style={{
             margin: 0,
+            fontSize: "40px",
+            fontWeight: "700",
+            color: "#ffffff",
+            letterSpacing: "1px",
           }}
         >
           LeaveSync
-        </h2>
+        </h1>
 
         <p
           style={{
             marginTop: "20px",
-            fontSize: "15px",
+            marginBottom: "6px",
+            fontSize: "16px",
             color: "#cbd5e1",
+            fontWeight: "500",
           }}
         >
           {user.name || "Administrator"}
@@ -73,6 +80,7 @@ function AdminSidebar() {
         <small
           style={{
             color: "#94a3b8",
+            fontSize: "14px",
           }}
         >
           Admin
@@ -103,6 +111,9 @@ function AdminSidebar() {
                   ? "#2563eb"
                   : "transparent",
               color: "white",
+              textAlign: "center",
+              fontSize: "16px",
+              fontWeight: "500",
             }}
           >
             {menu.name}
@@ -129,6 +140,7 @@ function AdminSidebar() {
             color: "white",
             cursor: "pointer",
             fontWeight: "bold",
+            fontSize: "16px",
           }}
         >
           Logout

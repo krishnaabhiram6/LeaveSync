@@ -6,28 +6,54 @@ function Home() {
   return (
     <div
       style={{
+        minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
-        backgroundColor: "#0f172a",
+        background:
+          "linear-gradient(135deg,#0f172a 0%,#172554 50%,#1e3a8a 100%)",
+        padding: "30px",
       }}
     >
       <div
         style={{
-          width: "450px",
-          padding: "40px",
-          border: "1px solid #475569",
-          borderRadius: "12px",
-          backgroundColor: "#1e293b",
+          width: "560px",
+          background: "rgba(255,255,255,0.08)",
+          backdropFilter: "blur(16px)",
+          border: "1px solid rgba(255,255,255,.15)",
+          borderRadius: "24px",
+          padding: "55px 45px",
           textAlign: "center",
-          boxShadow: "0 0 20px rgba(0,0,0,0.3)",
+          boxShadow: "0 25px 60px rgba(0,0,0,.35)",
         }}
       >
+        <div
+          style={{
+            width: "90px",
+            height: "90px",
+            margin: "0 auto 25px",
+            borderRadius: "50%",
+            background:
+              "linear-gradient(135deg,#2563eb,#3b82f6)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "40px",
+            color: "#fff",
+            fontWeight: "700",
+            boxShadow: "0 12px 35px rgba(37,99,235,.45)",
+          }}
+        >
+          L
+        </div>
+
         <h1
           style={{
-            color: "white",
-            marginBottom: "10px",
+            color: "#ffffff",
+            fontSize: "54px",
+            margin: 0,
+            fontWeight: "800",
+            letterSpacing: "-1px",
           }}
         >
           LeaveSync
@@ -36,46 +62,77 @@ function Home() {
         <p
           style={{
             color: "#cbd5e1",
-            marginBottom: "40px",
+            marginTop: "15px",
+            marginBottom: "45px",
+            fontSize: "18px",
+            lineHeight: "1.7",
           }}
         >
-          Multi-Tenant Leave Management System
+          Enterprise Multi-Tenant Leave Management System
         </p>
 
         <button
           onClick={() => navigate("/login")}
           style={{
             width: "100%",
-            padding: "14px",
-            marginBottom: "20px",
-            fontSize: "17px",
+            padding: "18px",
+            marginBottom: "18px",
+            fontSize: "18px",
             cursor: "pointer",
-            borderRadius: "8px",
+            borderRadius: "14px",
             border: "none",
-            backgroundColor: "#2563eb",
-            color: "white",
-            fontWeight: "bold",
+            background:
+              "linear-gradient(135deg,#2563eb,#1d4ed8)",
+            color: "#fff",
+            fontWeight: "700",
+            transition: ".25s",
+            boxShadow: "0 10px 25px rgba(37,99,235,.35)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-3px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
           }}
         >
-          Super Admin Login
+          👑 Super Admin Login
         </button>
 
         <button
           onClick={() => navigate("/tenant-login")}
           style={{
             width: "100%",
-            padding: "14px",
-            fontSize: "17px",
+            padding: "18px",
+            fontSize: "18px",
             cursor: "pointer",
-            borderRadius: "8px",
+            borderRadius: "14px",
             border: "none",
-            backgroundColor: "#16a34a",
-            color: "white",
-            fontWeight: "bold",
+            background:
+              "linear-gradient(135deg,#16a34a,#15803d)",
+            color: "#fff",
+            fontWeight: "700",
+            transition: ".25s",
+            boxShadow: "0 10px 25px rgba(22,163,74,.35)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-3px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
           }}
         >
-          Tenant Login
+          🏢 Tenant Login
         </button>
+
+        <div
+          style={{
+            marginTop: "40px",
+            color: "#94a3b8",
+            fontSize: "14px",
+          }}
+        >
+          Version 1.0 • Built with React + FastAPI
+        </div>
       </div>
     </div>
   );

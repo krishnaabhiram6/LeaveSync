@@ -54,3 +54,16 @@ def delete_notification(db: Session, notification_id: int):
     db.commit()
 
     return response
+
+def get_my_notifications(
+    db: Session,
+    current_user
+):
+    return (
+        db.query(Notification)
+        .filter(
+            Notification.user_id == current_user.id
+        )
+        .order_by(Notification.id.desc())
+        .all()
+    )

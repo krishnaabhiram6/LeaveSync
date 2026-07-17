@@ -11,10 +11,14 @@ from app.crud.notification import (
     get_all_notifications,
     get_notification_by_id,
     update_notification,
-    delete_notification
+    delete_notification,
+    get_my_notifications,
 )
 
-from app.auth.security import require_admin
+from app.auth.security import (
+    require_admin,
+    get_current_user,
+)
 
 router = APIRouter(
     prefix="/notifications",
@@ -37,6 +41,17 @@ def get_notifications(
     current_user=Depends(require_admin)
 ):
     return get_all_notifications(db)
+
+
+@router.get("/my", response_model=list[NotificationResponse])
+def get_my_notification_list(
+    db: Session = Depends(get_tenant_db),
+    current_user=Depends(get_current_user),
+):
+    return get_my_notifications(
+        db,
+        current_user,
+    )
 
 
 @router.get("/{notification_id}", response_model=NotificationResponse)

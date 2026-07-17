@@ -68,21 +68,33 @@ function Employees() {
 
   return (
     <div>
+      {/* Header */}
 
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "25px",
+          alignItems: "flex-start",
+          marginBottom: "35px",
         }}
       >
         <div>
-          <h1>Employees</h1>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: "34px",
+              fontWeight: "700",
+              color: "#0f172a",
+            }}
+          >
+            Employees
+          </h1>
 
           <p
             style={{
+              marginTop: "8px",
               color: "#64748b",
+              fontSize: "15px",
             }}
           >
             Manage company employees
@@ -90,37 +102,40 @@ function Employees() {
         </div>
       </div>
 
+      {/* Search */}
+
       <input
         type="text"
         placeholder="Search Employee..."
         value={search}
-        onChange={(e) =>
-          setSearch(e.target.value)
-        }
+        onChange={(e) => setSearch(e.target.value)}
         style={{
-          width: "350px",
-          padding: "12px",
-          borderRadius: "8px",
-          border: "1px solid #ddd",
-          marginBottom: "20px",
+          width: "380px",
+          padding: "13px 16px",
+          borderRadius: "10px",
+          border: "1px solid #cbd5e1",
+          outline: "none",
+          fontSize: "15px",
+          marginBottom: "25px",
         }}
       />
+
+      {/* Edit */}
 
       <EditEmployee
         selectedEmployee={selectedEmployee}
         fetchEmployees={fetchEmployees}
-        onClose={() =>
-          setSelectedEmployee(null)
-        }
+        onClose={() => setSelectedEmployee(null)}
       />
+
+      {/* Table */}
 
       <div
         style={{
           background: "white",
           borderRadius: "12px",
           overflow: "hidden",
-          boxShadow:
-            "0 5px 15px rgba(0,0,0,.08)",
+          boxShadow: "0 10px 30px rgba(15,23,42,.08)",
         }}
       >
         <table
@@ -131,18 +146,18 @@ function Employees() {
         >
           <thead
             style={{
-              background: "#1e293b",
+              background: "#0f172a",
               color: "white",
             }}
           >
             <tr>
-              <th style={{ padding: "15px" }}>ID</th>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Department</th>
-              <th>Designation</th>
-              <th>Actions</th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>ID</th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>Code</th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>Name</th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>Email</th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>Department</th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>Designation</th>
+              <th style={{ padding: "18px", fontWeight: "600" }}>Actions</th>
             </tr>
           </thead>
 
@@ -151,13 +166,11 @@ function Employees() {
               <tr
                 key={emp.id}
                 style={{
-                  borderBottom:
-                    "1px solid #eee",
+                  borderBottom: "1px solid #e2e8f0",
+                  height: "60px",
                 }}
               >
-                <td style={{ padding: "15px" }}>
-                  {emp.id}
-                </td>
+                <td style={{ padding: "18px" }}>{emp.id}</td>
 
                 <td>{emp.employee_code}</td>
 
@@ -171,23 +184,32 @@ function Employees() {
 
                 <td>
                   <button
-                    onClick={() =>
-                      setSelectedEmployee(emp)
-                    }
+                    onClick={() => setSelectedEmployee(emp)}
                     style={{
+                      background: "#2563eb",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "6px",
+                      padding: "8px 14px",
                       marginRight: "10px",
+                      cursor: "pointer",
                     }}
                   >
                     Edit
                   </button>
 
                   <button
-                    onClick={() =>
-                      handleDelete(emp)
-                    }
-                    disabled={
-                      deletingId === emp.id
-                    }
+                    onClick={() => handleDelete(emp)}
+                    disabled={deletingId === emp.id}
+                    style={{
+                      background: "#dc2626",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "6px",
+                      padding: "8px 14px",
+                      cursor: deletingId === emp.id ? "not-allowed" : "pointer",
+                      opacity: deletingId === emp.id ? 0.7 : 1,
+                    }}
                   >
                     {deletingId === emp.id
                       ? "Deleting..."
@@ -203,7 +225,8 @@ function Employees() {
                   colSpan="7"
                   style={{
                     textAlign: "center",
-                    padding: "30px",
+                    padding: "35px",
+                    color: "#64748b",
                   }}
                 >
                   No Employees Found
@@ -213,7 +236,6 @@ function Employees() {
           </tbody>
         </table>
       </div>
-
     </div>
   );
 }

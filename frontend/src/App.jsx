@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import Users from "./pages/Users/Users";
 import Employees from "./pages/Employees/Employees";
 import LeaveTypes from "./pages/LeaveTypes/LeaveTypes";
+import LeaveBalances from "./pages/LeaveBalances/LeaveBalances";
 import Leaves from "./pages/Leaves/Leaves";
 import Notifications from "./pages/Notifications/Notifications";
 import Tenants from "./pages/Tenants/Tenants";
@@ -16,6 +17,7 @@ import Layout from "./layouts/Layout";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 import MyLeaves from "./pages/MyLeaves/MyLeaves";
+import MyLeaveBalance from "./pages/LeaveBalances/MyLeaveBalance";
 
 function App() {
   return (
@@ -91,30 +93,52 @@ function App() {
           }
         />
 
-       <Route
-  path="/leaves"
-  element={
-    <ProtectedRoute
-      allowedRoles={[
-        "Admin",
-        "Manager",
-        "HR",
-      ]}
-    >
-      <Leaves />
-    </ProtectedRoute>
-  }
-/>
+        <Route
+          path="/leave-balances"
+          element={
+            <ProtectedRoute
+              allowedRoles={["Admin"]}
+            >
+              <LeaveBalances />
+            </ProtectedRoute>
+          }
+        />
 
-<Route
-  path="/my-leaves"
+        <Route
+          path="/leaves"
+          element={
+            <ProtectedRoute
+              allowedRoles={[
+                "Admin",
+                "Manager",
+                "HR",
+              ]}
+            >
+              <Leaves />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-leaves"
+          element={
+            <ProtectedRoute
+              allowedRoles={[
+                "Employee",
+              ]}
+            >
+              <MyLeaves />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+  path="/my-leave-balances"
   element={
     <ProtectedRoute
-      allowedRoles={[
-        "Employee",
-      ]}
+      allowedRoles={["Employee"]}
     >
-      <MyLeaves />
+      <MyLeaveBalance />
     </ProtectedRoute>
   }
 />

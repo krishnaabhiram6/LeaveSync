@@ -19,3 +19,8 @@ export const deleteNotification = async (id) => {
   const response = await api.delete(`/notifications/${id}`);
   return response.data;
 };
+
+export const getMyNotifications = async () => {
+  const response = await api.get("/notifications/my");
+  return response.data;
+};

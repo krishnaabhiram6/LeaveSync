@@ -59,5 +59,7 @@ def get_tenant_db(
 
     try:
         yield db
+
     finally:
+        db.rollback()
         db.execute(text("SET search_path TO public"))
